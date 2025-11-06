@@ -5,7 +5,6 @@
 !.gitignore
 !*.qmd
 !*.pdf
-!*.html
 !*.R
 
 # Optional: allow folders so git can see my structure
