@@ -1,0 +1,280 @@
+---
+title: "Week 13 class"
+format: html
+knitr:
+  opts_chunk:
+    message: false
+    warning: false
+    echo: false
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(tidymodels)
+
+```
+- **Classification Metrics in Tidymodels**
+- **Logistic regression and K nearest neighbors**
+- **Data splitting**
+- **Preprocessing with Tidymodels**
+
+## Metrics using `{yardstick}`
+
+We use logistic regression to predict `AHD` with the `Heart` data.
+
+```{r}
+heart <- read_csv("../data/Heart.csv")
+head(heart)
+
+```
+
+```{r}
+heart$AHD <- as.factor(heart$AHD)
+```
+
+Use `tidymodels` to fit a logistic regression model, get predictions
+
+```{r}
+mod <- logistic_reg() %>% fit(AHD ~ Age + Sex + RestBP + Chol, data = heart)
+preds <- mod %>% predict(new_data = heart)
+```
+
+Instead of `augment`, we simply create our own data frame with the actual and predicted values. `bibd_cols` is a `dplyr` function. `cbind` is a base R function and is similar. Using tidyverse consistently is generally good practice and will have advantages. Note that the second column is the heart data selecting only the `AHD` column.
+
+```{r, echo = FALSE}
+results <- bind_cols(preds, heart %>% select(AHD))
+```
+There are many metrics for classification. All the common metrics can be calculated in `yardstick`.
+
+```{r, echo = FALSE}
+results %>% sensitivity(truth = "AHD", estimate =  .pred_class)
+```
+
+Note that manual computation of accuracy is easy:
+
+```{r}
+mean(results$AHD == results$.pred_class)
+```
+
+We can define a list of metrics with `metric_set`. Notice that some of these are the same. Unfortunately some metrics have several aliases, depending on the field of application.
+
+```{r, echo = FALSE}
+metrics <- metric_set(accuracy, precision,  ppv, sensitivity, recall, f_meas)
+results %>% metrics(truth = "AHD", estimate =  .pred_class)
+```
+
+We can obtain probabilities, rather than hard class predictions.
+
+```{r, ech = FALSE}
+preds <- mod %>% predict(new_data = heart, type = "prob")
+preds %>% head()
+```
+
+This would allow us to find the AUC ROC.
+```{r, echo = FALSE}
+results <- bind_cols(preds, heart %>% select(AHD))
+results |> roc_auc(truth = "AHD", .pred_No)
+```
+
+(For some reason, we have to remove the `estimator =` part of the argument...)
+
+We can plot the ROC curve. `roc_curve` returns a data frame with the sensitivity and specificity for a range of thresholds.
+
+```{r, echo = FALSE}
+thresh_sens_spec <- results |> roc_curve(truth = "AHD", .pred_No)
+thresh_sens_spec |> head()
+```
+
+Now plot the AUC ROC curve.
+
+```{r}
+thresh_sens_spec |> ggplot(aes(x = 1 - specificity, y = sensitivity)) +
+    geom_line() +
+    geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+    labs(x = "1 - Specificity", y = "Sensitivity")
+```
+## Multiclass classification
+
+We use the `wine` data set from the UCI Maching Learning Repository. Its in Brightspace
+
+```{r,  echo = FALSE}
+wine <- read_csv("../data/wine.csv")
+head(wine)
+```
+
+```{r, echo = FALSE}
+library(janitor)
+wine <- wine %>% clean_names()
+wine$class_label <- as.factor(wine$class_label)
+```
+
+Multinomial regression is the multiclass version of logistic regression. It is a generalization of logistic regression to more than two classes.
+
+```{r}
+mod <- multinom_reg() %>% fit(class_label ~., data = wine)
+preds <- mod %>% predict(new_data = wine) # type = "class" is default
+results <- bind_cols(preds, wine %>% select(class_label))
+```
+
+```{r}
+mean(preds$.pred_class == wine$class_label)
+```
+
+```{r}
+metrics <- metric_set(accuracy, precision,  ppv, sensitivity, recall, f_meas)
+results %>% metrics(truth = class_label, estimate = .pred_class)
+```
+
+
+## K nearest neighbors
+
+```{r}
+mod <- nearest_neighbor(neighbors = 3, mode = "classification") %>%
+  fit(class_label ~., data = wine)
+
+preds <- mod %>% predict(new_data = wine) # type = "class" is default
+results <- bind_cols(preds, wine %>% select(class_label))
+
+metrics <- metric_set(accuracy, precision,  ppv, sensitivity, recall, f_meas)
+results %>% metrics(truth = class_label, estimate = .pred_class)
+```
+
+We wont always get perfect scores! Also we really should be scaling for knn! It doesnt seem to matter in this case.
+
+
+
+## Data splitting
+
+**We've been doing it wrong!**
+
+We should not be evaluatng on the training data. Rather, we should create training and test splits. This is especially true when the goal is predicting new data. On the other hand, if the goal is to understand how a given model fits the given data, or to understand relationships then it may be okay to use the training data. There is still a question of when you are fitting noise in the data, rather than the underlying structure. So care must be taken. Setting aside a separate test set is usually a good idea in any case.
+
+The simplest thing to do is to simply split the data into training and test sets. There are many other schemes for training, validation, and testing.
+
+We first do this manually, then show how tidymodels rsample pacakage can do this.
+
+#### Manually using `sample` from base R
+
+First random sample the indices, then index the data using these indices. This command samples 80% of the indices 1 to nrow(mtcars) without replacement.
+```{r}
+train_idx <- sample(1:nrow(mtcars), 0.8*nrow(mtcars))
+```
+
+Now we can use these indices to index the data.
+
+```{r}
+train <- mtcars[train_idx, ]
+test <- mtcars[-train_idx, ]
+```
+
+### Fit on training data, predict on test data
+
+ (But we also predict train for comparison and to check overfitting)
+
+ Fit the model on the training data
+
+```{r}
+ mod <- linear_reg() |> fit(mpg ~ ., data = train)
+ ```
+
+Training performance:
+
+```{r}
+train_pred <- predict(mod, new_data = train)
+results_train <- bind_cols(train_pred, train %>% select(mpg))
+
+metrics <- metric_set(rmse, rsq)
+results_train %>% metrics(truth = mpg, .pred)
+```
+
+Test performance:
+
+```{r}
+test_pred <- predict(mod, new_data = test)
+results_test <- bind_cols(test_pred, test %>% select(mpg))
+
+metrics <- metric_set(rmse, rsq)
+results_test %>% metrics(truth = mpg, .pred)
+```
+
+We can see the effect of overfitting, though it will depend on your split, which is random. There is a lot of variablility as this is very small data set and we are using all the predictors. With linear regression, it is a problem when the number of predictors gets closer to  the number of observations.
+
+#### Use tidymodels
+
+`rsample` in Tidymodels has lots of splitting tools.
+
+```{r}
+data_split <- initial_split(mtcars, prop = 0.8)
+train <- training(data_split)
+test <- testing(data_split)
+
+mod <- linear_reg() |> fit(mpg ~ ., data = train)
+
+train_pred <- predict(mod, new_data = train)
+test_pred <- predict(mod, new_data = test)
+
+results_test <- bind_cols(test_pred, test %>% select(mpg))
+results_train <- bind_cols(train_pred, train %>% select(mpg))
+
+results_train %>% metrics(truth = mpg, .pred)
+results_test %>% metrics(truth = mpg, .pred)
+```
+
+## Preprocessing using tidymodels: `recipes` and `workflow`
+
+When we do preprocessing such as scaling, it is very important that you do not use the test data; for example, to find means and standard deviations. Otherwise you are using the test set to fit the model. In the case of scaling, this means that when we find the z scors of the test data, we use the mean and standard deviation of the training data. *Data leakage* occurs when information from the test set is used in any part of the training or model selection process.
+
+Tidymodels `recipes` allows us to do all kinds of preprocessing easily, and then `workflows` allows us to combine the preprocessing and the model fit, keeping training and test sets separate. That saves a lot of time and effort.
+
+### `recipes`
+
+First we create a recipe with a formula, then add preprocessing steps. We just add scaling step initially.
+We use the `heart` data. First split the data into training and test sets.
+
+```{r}
+data_split <- initial_split(heart, prop = 0.8)
+train <- training(data_split)
+test <- testing(data_split)
+```
+Now create the recipe and add steps. Notice that we use the training data to create the recipe, but it does not matter a whole lot- the recipe is just a *specification*- a set of instructions. It is only getting things like variable names and levels from the data. It does not do any processing or fitting. We use `normalize` to scale the data to have mean 0 and standard deviation 1.
+
+```{r}
+rec <- recipe(AHD ~ Age + Sex + RestBP + Chol, data = train) |>
+    step_normalize(all_predictors())
+```
+
+We now create a model specification. This is just what we have done before, but we dont fit the model. We then define a *workflow* that combines the recipe  and the model specification we defined.
+
+```{r}
+mod_spec <- logistic_reg()
+
+flow <- workflow() |>
+    add_recipe(rec) |>
+    add_model(mod_spec)
+```
+
+Finally, the *workflow* is the thing that we fit and predict, rather than just the model weve done previously. From here on we can treate the workflow as if it were a model, which it is. We find the training and test accuracy
+
+```{r}
+flow_fit <- flow |> fit(data = train)
+pred_train <- predict(flow_fit, new_data = train, type = "class")
+pred_test <- predict(flow_fit, new_data = test, type = "class")
+
+results_train <- bind_cols(pred_train, train %>% select(AHD))
+results_test <- bind_cols(pred_test, test %>% select(AHD))
+
+results_train |> accuracy(truth = AHD, .pred_class)
+results_test  |>  accuracy(truth = AHD, .pred_class)
+
+```
+
+Lets also find the AUC
+
+```{r}
+pred_test <- predict(flow_fit, new_data = test, type = "prob")
+results_test <- bind_cols(pred_test, test %>% select(AHD))
+
+results_test |> roc_auc(truth = AHD, .pred_No)
+```

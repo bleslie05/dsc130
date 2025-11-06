@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<!-- saved from url=(0099)https://0ed0d1714ca24a2fab0f3d86dea44ca3.app.posit.cloud/help/library/forcats/html/fct_reorder.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>R: Reorder factor levels by sorting along another variable</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<link href="./prism.css" rel="stylesheet">
+<link rel="stylesheet" href="./katex.css">
+<script type="text/javascript" src="./katex-config.js"></script>
+<script defer="" src="./katex.js" onload="processMathHTML();"></script>
+<link rel="stylesheet" type="text/css" href="./R.css">
+<style>p+div[style="text-align: center;"]{font-size:16px;}.editor_dark{color:white;background:none;}.editor_dark div#TOC{color:white !important;background:none !important;}.editor_dark h1,.editor_dark h2,.editor_dark h3,.editor_dark h4{color:white !important;background:none !important;border-color:#6a6a6a !important;}.editor_dark table{color:white !important;background:none !important;}.editor_dark.ace_editor_theme p,.editor_dark.ace_editor_theme a,.rstudio-themes-dark.editor_dark.ace_editor_theme div{color:white !important;}.editor_dark ::selection{background-color:#ccc;}.rstudio-themes-dark.rstudio-themes-scrollbars::-webkit-scrollbar,.rstudio-themes-dark.rstudio-themes-scrollbars ::-webkit-scrollbar{background:#fff;}.rstudio-themes-dark.editor_dark.ace_editor_theme a.sourceLine{color:#a3a3a3 !important;}.rstudio-themes-dark.editor_dark.ace_editor_theme h3+pre{color:#dedede;background:none;}.rstudio-themes-dark.editor_dark.ace_editor_theme pre,.rstudio-themes-dark.editor_dark.ace_editor_theme pre code{background-color:#1f1f1f;color:#f0f0f0;filter:none !important;}.rstudio-themes-dark.editor_dark.ace_editor_theme p code{color:white !important;background:none;}.rstudio-themes-dark.editor_dark.ace_editor_theme table thead,.rstudio-themes-dark.editor_dark.ace_editor_theme table tr.even{background-color:#1f1f1f !important;border-color:#999 !important;}.rstudio-themes-dark.editor_dark.ace_editor_theme table tr.odd{border-color:#999 !important;}.rstudio-themes-dark.editor_dark.ace_editor_theme table th,.rstudio-themes-dark.editor_dark.ace_editor_theme table td{border-color:#666 !important;}.rstudio-themes-dark.editor_dark.ace_editor_theme blockquote{background-color:#1f1f1f !important;border-radius:3px;}.rstudio-themes-dark.editor_dark.ace_editor_theme .code-toolbar{background-color:#1f1f1f;border:2px solid #1f1f1f;border-radius:4px;padding:2px 6px;}.rstudio-themes-dark.editor_dark.ace_editor_theme code,.rstudio-themes-dark.editor_dark.ace_editor_theme pre{margin:0;padding:0;text-shadow:none;}.rstudio-themes-dark.editor_dark.ace_editor_theme .token.operator{background:none;}.rstudio-themes-dark.editor_dark.ace_editor_theme .token{filter:brightness(1.25);}.rstudio-themes-dark.editor_dark.ace_editor_theme p+div[style="text-align: center;"]{background-color:#1f1f1f;padding:8px 0;}.rstudio-themes-dark.editor_dark.ace_editor_theme .chunk pre{background:none;margin:1em 0;}.rstudio-themes-dark.editor_dark.ace_editor_theme .source{background-color:#1f1f1f;border:1px solid #1f1f1f;}.rstudio-themes-dark.editor_dark.ace_editor_theme .output,.rstudio-themes-dark.editor_dark.ace_editor_theme .warning,.rstudio-themes-dark.editor_dark.ace_editor_theme .error,.rstudio-themes-dark.editor_dark.ace_editor_theme .message{background-color:black;border:1px solid black;}.rstudio-themes-dark.editor_dark.ace_editor_theme .hl.std{color:#f0f0f0;}.rstudio-themes-dark.editor_dark.ace_editor_theme .hl.opt{color:#9a6e3a;}.rstudio-themes-dark.editor_dark.ace_editor_theme ::selection{background:rgba(255, 255, 255, 0.15) !important;color:inherit !important;}.ace_editor_theme div.sourceCode{border-radius:3px;}.rstudio-themes-default.ace_editor_theme div.sourceCode,.rstudio-themes-alternate.ace_editor_theme div.sourceCode{background-color:#f7f7f7;}.rstudio-themes-dark.ace_editor_theme div.sourceCode{background-color:#1f1f1f;}.rstudio-themes-dark.rstudio-themes-scrollbars::-webkit-scrollbar,.rstudio-themes-dark.rstudio-themes-scrollbars ::-webkit-scrollbar{background:#fff;}.windows.rstudio-themes-dark.rstudio-themes-scrollbars::-webkit-scrollbar,.windows.rstudio-themes-dark.rstudio-themes-scrollbars ::-webkit-scrollbar{width:17px;height:17px;}.rstudio-themes-dark.rstudio-themes-scrollbars::-webkit-scrollbar-thumb,.rstudio-themes-dark.rstudio-themes-scrollbars ::-webkit-scrollbar-thumb{-webkit-border-radius:10px;background:rgb(78, 92, 104);border:solid 3px rgb(47, 57, 65);}.rstudio-themes-dark.rstudio-themes-scrollbars::-webkit-scrollbar-track,.rstudio-themes-dark.rstudio-themes-scrollbars ::-webkit-scrollbar-track,.rstudio-themes-dark.rstudio-themes-scrollbars::-webkit-scrollbar-corner,.rstudio-themes-dark.rstudio-themes-scrollbars ::-webkit-scrollbar-corner{background:rgb(47, 57, 65);}</style></head><body class="rstudio-themes-light-menus rstudio-themes-default ace_editor_theme macintosh rstudio-themes-flat" id="rstudio_container"><div class="container">
+
+<table style="width: 100%;"><tbody><tr><td>fct_reorder {forcats}</td><td style="text-align: right;">R Documentation</td></tr></tbody></table>
+
+<h2 id="fct_reorder">Reorder factor levels by sorting along another variable</h2>
+
+<h3>Description</h3>
+
+<p><code>fct_reorder()</code> is useful for 1d displays where the factor is mapped to
+position; <code>fct_reorder2()</code> for 2d displays where the factor is mapped to
+a non-position aesthetic. <code>last2()</code> and <code>first2()</code> are helpers for <code>fct_reorder2()</code>;
+<code>last2()</code> finds the last value of <code>y</code> when sorted by <code>x</code>; <code>first2()</code> finds the first value.
+</p>
+
+
+<h3>Usage</h3>
+
+<div class="code-toolbar"><pre class="language-r" tabindex="0"><code class="language-r">fct_reorder<span class="token punctuation">(</span>
+  .f<span class="token punctuation">,</span>
+  .x<span class="token punctuation">,</span>
+  .fun <span class="token operator">=</span> median<span class="token punctuation">,</span>
+  <span class="token ellipsis">...</span><span class="token punctuation">,</span>
+  .na_rm <span class="token operator">=</span> <span class="token keyword">NULL</span><span class="token punctuation">,</span>
+  .default <span class="token operator">=</span> <span class="token number">Inf</span><span class="token punctuation">,</span>
+  .desc <span class="token operator">=</span> <span class="token boolean">FALSE</span>
+<span class="token punctuation">)</span>
+
+fct_reorder2<span class="token punctuation">(</span>
+  .f<span class="token punctuation">,</span>
+  .x<span class="token punctuation">,</span>
+  .y<span class="token punctuation">,</span>
+  .fun <span class="token operator">=</span> last2<span class="token punctuation">,</span>
+  <span class="token ellipsis">...</span><span class="token punctuation">,</span>
+  .na_rm <span class="token operator">=</span> <span class="token keyword">NULL</span><span class="token punctuation">,</span>
+  .default <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">Inf</span><span class="token punctuation">,</span>
+  .desc <span class="token operator">=</span> <span class="token boolean">TRUE</span>
+<span class="token punctuation">)</span>
+
+last2<span class="token punctuation">(</span>.x<span class="token punctuation">,</span> .y<span class="token punctuation">)</span>
+
+first2<span class="token punctuation">(</span>.x<span class="token punctuation">,</span> .y<span class="token punctuation">)</span>
+</code></pre><div class="toolbar"></div></div>
+
+
+<h3 class="r-arguments-title">Arguments</h3>
+
+<table>
+<tbody><tr><td><code id="fct_reorder_:_.f">.f</code></td>
+<td>
+<p>A factor (or character vector).</p>
+</td></tr>
+<tr><td><code id="fct_reorder_:_.x">.x</code>, <code id="fct_reorder_:_.y">.y</code></td>
+<td>
+<p>The levels of <code>f</code> are reordered so that the values
+of <code>.fun(.x)</code> (for <code>fct_reorder()</code>) and <code>fun(.x, .y)</code> (for <code>fct_reorder2()</code>)
+are in ascending order.</p>
+</td></tr>
+<tr><td><code id="fct_reorder_:_.fun">.fun</code></td>
+<td>
+<p>n summary function. It should take one vector for
+<code>fct_reorder</code>, and two vectors for <code>fct_reorder2</code>, and return a single
+value.</p>
+</td></tr>
+<tr><td><code id="fct_reorder_:_...">...</code></td>
+<td>
+<p>Other arguments passed on to <code>.fun</code>.</p>
+</td></tr>
+<tr><td><code id="fct_reorder_:_.na_rm">.na_rm</code></td>
+<td>
+<p>Should <code>fct_reorder()</code> remove missing values?
+If <code>NULL</code>, the default, will remove missing values with a warning.
+Set to <code>FALSE</code> to preserve <code>NA</code>s (if you <code>.fun</code> already handles them) and
+<code>TRUE</code> to remove silently.</p>
+</td></tr>
+<tr><td><code id="fct_reorder_:_.default">.default</code></td>
+<td>
+<p>What default value should we use for <code>.fun</code> for
+empty levels? Use this to control where empty levels appear in the
+output.</p>
+</td></tr>
+<tr><td><code id="fct_reorder_:_.desc">.desc</code></td>
+<td>
+<p>Order in descending order? Note the default is different
+between <code>fct_reorder</code> and <code>fct_reorder2</code>, in order to
+match the default ordering of factors in the legend.</p>
+</td></tr>
+</tbody></table>
+
+
+<h3>Examples</h3>
+
+<p><a href="https://0ed0d1714ca24a2fab0f3d86dea44ca3.app.posit.cloud/help/library/forcats/Example/fct_reorder" onclick="window.parent.helpNavigate(this.href); return false">Run examples</a></p><div class="code-toolbar"><pre class="language-r" tabindex="0"><code class="language-r"><span class="token comment"># fct_reorder() -------------------------------------------------------------</span>
+<span class="token comment"># Useful when a categorical variable is mapped to position</span>
+boxplot<span class="token punctuation">(</span>Sepal.Width <span class="token operator">~</span> Species<span class="token punctuation">,</span> data <span class="token operator">=</span> iris<span class="token punctuation">)</span>
+boxplot<span class="token punctuation">(</span>Sepal.Width <span class="token operator">~</span> fct_reorder<span class="token punctuation">(</span>Species<span class="token punctuation">,</span> Sepal.Width<span class="token punctuation">)</span><span class="token punctuation">,</span> data <span class="token operator">=</span> iris<span class="token punctuation">)</span>
+
+<span class="token comment"># or with</span>
+library<span class="token punctuation">(</span>ggplot2<span class="token punctuation">)</span>
+ggplot<span class="token punctuation">(</span>iris<span class="token punctuation">,</span> aes<span class="token punctuation">(</span>fct_reorder<span class="token punctuation">(</span>Species<span class="token punctuation">,</span> Sepal.Width<span class="token punctuation">)</span><span class="token punctuation">,</span> Sepal.Width<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  geom_boxplot<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment"># fct_reorder2() -------------------------------------------------------------</span>
+<span class="token comment"># Useful when a categorical variable is mapped to color, size, shape etc</span>
+
+chks <span class="token operator">&lt;-</span> subset<span class="token punctuation">(</span>ChickWeight<span class="token punctuation">,</span> as.integer<span class="token punctuation">(</span>Chick<span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">10</span><span class="token punctuation">)</span>
+chks <span class="token operator">&lt;-</span> transform<span class="token punctuation">(</span>chks<span class="token punctuation">,</span> Chick <span class="token operator">=</span> fct_shuffle<span class="token punctuation">(</span>Chick<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+<span class="token comment"># Without reordering it's hard to match line to legend</span>
+ggplot<span class="token punctuation">(</span>chks<span class="token punctuation">,</span> aes<span class="token punctuation">(</span>Time<span class="token punctuation">,</span> weight<span class="token punctuation">,</span> colour <span class="token operator">=</span> Chick<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  geom_point<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  geom_line<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment"># With reordering it's much easier</span>
+ggplot<span class="token punctuation">(</span>chks<span class="token punctuation">,</span> aes<span class="token punctuation">(</span>Time<span class="token punctuation">,</span> weight<span class="token punctuation">,</span> colour <span class="token operator">=</span> fct_reorder2<span class="token punctuation">(</span>Chick<span class="token punctuation">,</span> Time<span class="token punctuation">,</span> weight<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  geom_point<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  geom_line<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  labs<span class="token punctuation">(</span>colour <span class="token operator">=</span> <span class="token string">"Chick"</span><span class="token punctuation">)</span>
+</code></pre><div class="toolbar"></div></div>
+
+<hr><div style="text-align: center;">[Package <em>forcats</em> version 1.0.0 <a href="https://0ed0d1714ca24a2fab0f3d86dea44ca3.app.posit.cloud/help/library/forcats/html/00Index.html" onclick="window.parent.helpNavigate(this.href); return false">Index</a>]</div>
+</div>
+<script src="./prism.js"></script>
+
+<script type="text/javascript">
+
+   if (window.parent.helpNavigated)
+      window.parent.helpNavigated(document, window);
+
+   if (window.parent.helpKeydown)
+      window.onkeydown = function(e) { window.parent.helpKeydown(e); }
+
+   if (window.parent.helpMousedown)
+      window.onmousedown = function(e) { window.parent.helpMousedown(e); }
+
+   if (window.parent.helpMouseover)
+      window.onmouseover = function(e) { window.parent.helpMouseover(e); }
+
+   if (window.parent.helpMouseout)
+      window.onmouseout = function(e) { window.parent.helpMouseout(e); }
+
+   if (window.parent.helpClick)
+      window.onclick = function(e) { window.parent.helpClick(e); } 
+
+   window.addEventListener("load", function(event) {
+
+      // https://github.com/rstudio/rmarkdown/blob/de02c926371fdadc4d92f08e1ad7b77db069be49/inst/rmarkdown/templates/html_vignette/resources/vignette.css#L187-L201
+      var classMap = {
+         "at": "ace_keyword ace_operator",
+         "ch": "ace_string",
+         "co": "ace_comment",
+         "cf": "ace_keyword",
+         "cn": "ace_constant ace_language",
+         "dt": "ace_identifier",
+         "dv": "ace_constant ace_numeric",
+         "er": "ace_keyword ace_operator",
+         "fu": "ace_identifier",
+         "kw": "ace_keyword",
+         "ot": "ace_keyword ace_operator",
+         "sc": "ace_keyword ace_operator",
+         "st": "ace_string",
+      };
+
+      var els = document.querySelectorAll(".sourceCode span");
+      for (el of els)
+         el.className = classMap[el.className] || el.className;
+
+   });
+
+</script>
+<link type="text/css" rel="stylesheet" id="rstudio-acethemes-linkelement" href="./textmate.rstheme"></body></html>

@@ -1,0 +1,199 @@
+
+<!-- saved from url=(0011)about:blank -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body><pre style="white-space: pre-wrap; font-size: 10pt;">---
+title: "Lab 4"
+author: "Brandon Leslie"
+format: pdf
+editor: visual
+---
+```{r include=FALSE}
+library(tidyverse)
+library(nycflights13)
+library(skimr)
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+# Lab 4 - Transforming data, cont: mutating joins
+
+## Toy data-sets
+
+**Create the toy data sets in the slides using tibble rather than tribble** 
+### Band d.s.
+```{r}
+band &lt;- tibble(
+ name = c("Mick", "John", "Paul"),
+ band = c("Stones", "Beatles", "Beatles")
+)
+
+band
+```
+
+### Instruments d.s.
+```{r}
+instrument &lt;- tibble(
+ name = c("John", "Paul", "Keith"),
+ band = c("Guitar", "Bass", "Guitar")
+)
+
+instrument
+```
+
+
+**Experiment with the various joins as in the examples**
+
+### Left Join
+
+```{r}
+band %&gt;% 
+  left_join(instrument, by = "name")
+```
+
+### Right join
+
+```{r}
+band %&gt;% 
+  right_join(instrument, by = "name")
+```
+
+
+### Full Join
+
+```{r}
+band %&gt;% 
+  full_join(instrument, by = "name")
+```
+
+
+### Inner
+
+```{r}
+band %&gt;% 
+  inner_join(instrument, by = "name")
+```
+
+
+## NYC Flights Data-set
+
+**Use data(package = "nycflights13") to see the included data sets.**
+
+```{r}
+data(package = "nycflights13")
+```
+
+
+**Use skimr package to inspect data frames**
+
+```{r}
+skim(flights)
+skim(airlines)
+skim(weather)
+skim(planes)
+skim(airports)
+```
+
+
+**Join airlines to flights to find the names of which airlines had the largest arrival delays.**
+
+```{r}
+flights %&gt;% 
+  left_join(airlines, join_by(carrier)) %&gt;% 
+  select(name, arr_delay, tailnum) %&gt;% 
+  arrange(desc(arr_delay))
+  
+  
+  
+
+
+  
+
+  
+```
+
+The names of the airlines with the largest **arr_delay**'s are: **Hawaiian Airlines Inc.**, **Envoy Air**, **American Airlines Inc.**, and **Delta Air Lines Inc.** 
+
+**Use flights and airports to compute the distance and average arr_delay by destination airport (names only, not codes).**
+
+
+
+```{r}
+flights2.0 &lt;- flights %&gt;% 
+ left_join(airports, join_by(dest == name)) %&gt;% 
+  group_by("Destination Airport" = dest) %&gt;% 
+  summarize(
+    "Average Arrival Delay" = mean(arr_delay, na.rm = TRUE),
+    "Distance" = sum(distance, na.rm = TRUE)
+    
+  )
+flights2.0
+```
+
+
+## Population and Continents data sets, Brightspace
+
+**Join these two data sets, and create a new data frame called population_summary that contains a row for each continent and a column for the total population for that continent, in descending order of population.**
+
+```{r}
+population_summary  &lt;- population %&gt;% 
+ left_join(continents,  join_by(country == entity)) %&gt;% 
+  group_by("Continents" = continent) %&gt;% 
+  summarize(
+    Total_Population = sum(population, na.rm = TRUE)
+  ) %&gt;% 
+  arrange(desc(Total_Population))
+population_summary
+```
+
+## NFL `attendance` and `standings` data sets, Brightspace
+
+**Make boxplots of weekly attendance for each team**
+
+
+
+
+```{r}
+attendance %&gt;% 
+  ggplot(aes(x = weekly_attendance)) + 
+  geom_boxplot() +
+    labs( x = "Weekly Attendance by 10,000s",
+          title = "Weekly Attendance of Each Team") +
+    scale_x_continuous(label = label_number(scale = 1/10000)) +
+  facet_wrap(~team_name)
+
+```
+
+
+**Use `fct_reorder` to order the teams according to attendance**
+
+```{r}
+attendance %&gt;% 
+  ggplot(aes(y = fct_reorder(team_name, weekly_attendance), x = weekly_attendance)) + 
+  geom_boxplot() +
+    labs( x = "Weekly Attendance by 10,000s",
+          title = "Weekly Attendance of Each Team") +
+    scale_x_continuous(label = label_number(scale = 1/10000)) 
+
+```
+
+**Does it make sense to arrange vertically or horizontally?**
+
+It makes sense to arrange vertically because it is more visually appealing to the eye to compare this way.
+
+
+**Use `fill = ` to plot side by side for playoffs vs not **
+
+```{r}
+attendance %&gt;% 
+  left_join(standings, join_by(team_name)) %&gt;% 
+  ggplot(aes(y = fct_reorder(team_name, weekly_attendance), x = weekly_attendance)) + 
+  geom_boxplot(aes(fill = playoffs)) +
+    labs( x = "Weekly Attendance by 10,000",
+          y = "Team Name",
+          title = "Weekly Attendance of Each Team") +
+    scale_x_continuous(label = label_number(scale = 1/10000)) +
+  theme_minimal()
+```
+
+
+</pre></body></html>

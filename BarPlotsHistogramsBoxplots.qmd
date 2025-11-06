@@ -1,0 +1,70 @@
+---
+title: "BarPlots, Histograms, and BoxPlots"
+format: html
+editor: visual
+---
+ 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r include=FALSE}
+library(tidyverse)
+
+```
+
+
+## Barplots
+
+### Exercise 1A
+Types of cars and quantity in dataset.
+```{r}
+ggplot(aes(x = class), data = mpg) +
+  geom_bar(aes(fill = drv), position = "dodge")
+```
+
+### Exercise 1B
+Different types of drives in different types of cars .
+*(4-wheel drive, 3-wheel drive, etc.)*
+```{r}
+ggplot(aes(x = drv), data = mpg) +
+  geom_bar(aes(fill = class), position = "dodge")
+```
+
+## Histograms
+
+### Exercise 2A
+Quantity & price of diamonds.
+```{r}
+ggplot(aes(x = price), data = diamonds) +
+  geom_histogram(binwidth = 250, color = "blue")
+```
+
+### Exercise 2B
+Density bar graph of price of diamonds. The higher the peak, the more diamonds
+of that type there are.
+```{r}
+ggplot(aes(x = price), data = diamonds) +
+  geom_density(color = "blue")
+```
+
+### Exercise 2C
+Prices of diamonds by color.
+```{r}
+ggplot(aes(x = price), data = diamonds) +
+  geom_histogram(binwidth = 500, color = "blue") + 
+  facet_wrap(~color)
+```
+
+## BoxPlots
+
+## Exercise 3
+Average milleage for different types of cars.
+```{r}
+mpg %>%
+ggplot(aes(x = hwy, y = class)) + 
+  geom_boxplot(color = "black")
+  
+```
+

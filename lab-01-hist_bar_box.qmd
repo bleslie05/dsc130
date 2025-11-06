@@ -1,0 +1,154 @@
+---
+title: "Lab 1: Barplots, Histograms, Boxplots"
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+Work through the examples and complete the exercises below. 
+
+First read in the `penguins` data. I removed the `NA` values for you.
+
+```{r}
+penguins <- read.csv("https://raw.githubusercontent.com/marciero/MAT150/main/class_data/penguins.csv")
+
+```
+
+This is the penguins data we have seen.
+
+```{r}
+head(penguins)
+```
+
+We can list the different species. The `$` is how you select columns in the data frame.
+
+```{r}
+unique(penguins$species)
+```
+
+We will also load in tidyverse if you havent done that.
+
+```{r}
+library(tidyverse)
+
+```
+
+We will make extensive use of `ggplot` for visualizations. It is part of the `tidyverse` meta package. To create a bar plot us execute the code below. 
+
+Here is how the commands work: `ggplot()` creates the plot. `aes` is for "aesthetic mapping". This is where you tell R what the x and y are, if any. Then you tell R what the data set is. Then, you add layers to the plot with the "+" sign. Every type of plot has its own "geom". Bar charts are geom_bar. We can add more arguments/options inside geom_bar(), as we will see soon. 
+
+```{r}
+ggplot(aes(x = species), data = penguins) +
+  geom_bar()
+```
+
+Nice. If we want seperate bars, we can use the `position = "dodge"`
+argument. Note that it is not an aesthetic, so it sits outside the
+`aes()`
+
+```{r}
+ggplot(aes(x = species), data = penguins) +
+  geom_bar(aes(fill = island), position = "dodge")
+```
+
+The mpg data is a built-in data set with tidyverse- we dont have to load
+it. Take a look at the data set using head(). You can type that right in
+the console rather than in your script file. Which data are categorical
+and which are numerical?
+
+```{r}
+head(mpg)
+```
+
+**Exercise:** For the mpg data 1. Make a bar plot of the class data. 2.
+Make a bar plot that also displays drv data to your bar plot using
+`fill = drv` (drv is the type of drive train the vehicle has) 3. Try the
+above with position = "dodge" 4. Try creating the graph the other way
+around - with heights for drv and fill indicating the class.
+
+**Remark:** If our data is tabulated with count data, or if we simply
+want to plot the actual y values rather than counts, we will use
+`geom_col()`. As an example, we might do
+
+######### 
+
+######### 
+
+## Histograms
+
+We make a "histogram" of bill lengths. This is a way to visualize the distribution of this numerical variable.
+
+
+```{r}
+ggplot(aes(x = bill_length_mm), data = penguins) +
+  geom_histogram() 
+```
+
+Note the the command has the same format as for bar plots. This time
+with geom_histogram. We can specify the binwidth with `binwidth = 30` for example.
+The idea is to use a binwidth that gives you a sense of the shape of the
+data; that is the "distribution". If we use too small a binwidth, many
+data points will get their own bin. The other extreme would be with a
+very large width, you might get just one bin. Try it!
+
+To make our histogram look a little nicer we can use the following to
+outline each bin. Note that color is not an aesthetic- it does not
+appear inside `aes()`. That is because it is not mapping variables in
+the data to colors. It is simply making part to the graph a different
+color.
+
+```{r}
+ggplot(aes(x = bill_length_mm), data = penguins) +
+  geom_histogram(color = "black")    ## "white" works too!
+```
+
+
+You might notice that the distribution is somewhat "bimodal". What do
+you think causes that? We can actually create separate histograms using
+facet_wrap. Notice we add a new layer
+
+```{r}
+ggplot(aes(x = bill_length_mm), data = penguins) +
+  geom_histogram(binwidth = 1.5, color = "black")  +
+  facet_wrap(~ species)
+```
+
+The `diamonds` data set comes with tidyverse, so again we dont have to load it. It is a data set of diamond prices. 
+and other variables. Inspect the data by executing `glimpse(diamonds)`in the console. Also try `View(diamonds)` to see the data in a spreadsheet format. Now try adding an R code chunk below with glimpse, so that it will render in your finished document. (You can use the green C button with the plus sign in the top right of the editor window to add a new chunk.)
+
+
+**Exercise**: For the diamonds data, insert code chunks to do the following
+
+- Plot a histogram of price. Find
+a reasonable binwidth that illustrates the shape of the distribution 
+
+- Try `geom_density()` instead of `geom_histogram` and see what you get. (Dont use a binwidth-it does
+not make sense for this plot.) 
+
+- What other "categorical" variables may
+influence price? Try facet_wrap on one of them. 
+
+```{r}
+
+```
+
+
+- Now try
+`aes(fill = )` on one of the categorical variables. (With no facet_wrap)
+
+## Boxplots.
+
+These are created using the `geom_boxplot()`. We can specify a
+categorical variable as the x-variable to create side-by-side boxplots
+
+```{r}
+penguins %>% 
+  ggplot(aes(x = island, y = bill_length_mm)) +
+  geom_boxplot()
+```
+
+**Exercise:** For the mpg data, create a boxplot of hwy mileage by class. 
