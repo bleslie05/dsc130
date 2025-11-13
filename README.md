@@ -1,4 +1,4 @@
-# DSC-130 — Introduction to Data Science
+# DSC-130 — Exploring Data
 
 **University of New England (UNE)**  
 **Student:** Brandon Leslie  
@@ -9,7 +9,7 @@
 
 ---
 
-## 📘 Overview
+## Overview
 
 This repository contains coursework, labs, and instructor-provided materials for **DSC-130: Introduction to Data Science**.  
 It includes both **instructor examples** and **student-authored work** completed as part of the course.  
@@ -17,7 +17,7 @@ All work was conducted in **RStudio/Posit Cloud**, using the **tidyverse** and *
 
 ---
 
-## 🧩 Repository Contents
+## Repository Contents
 
 | File | Description | Authorship |
 |------|--------------|-------------|
@@ -39,7 +39,7 @@ All work was conducted in **RStudio/Posit Cloud**, using the **tidyverse** and *
 
 ---
 
-## 🧠 Topics Covered
+## Topics Covered
 
 - Data visualization with **ggplot2**
 - Data wrangling and transformation using **dplyr** and **tidyr**
@@ -52,21 +52,21 @@ All work was conducted in **RStudio/Posit Cloud**, using the **tidyverse** and *
 
 ---
 
-## ⚙️ Tools and Packages
+## Tools and Packages
 
 - **Software:** RStudio / Posit Cloud  
 - **R Packages:** `tidyverse`, `tidymodels`, `ggplot2`, `dplyr`, `tidyr`, `recipes`, `yardstick`, `workflows`, `ISLR`, `fivethirtyeight`, `nycflights13`
 
 ---
 
-## 🧾 Academic Integrity Notice
+## Academic Integrity Notice
 
 This repository contains both **student-authored assignments** and **instructor-provided instructional materials**.  
 All content is shared for educational and portfolio purposes only and should not be redistributed or submitted as original work by others.
 
 ---
 
-## 📈 Skills Demonstrated
+## Skills Demonstrated
 
 - Statistical modeling and visualization  
 - Regression and classification with `tidymodels`  
@@ -77,7 +77,7 @@ All content is shared for educational and portfolio purposes only and should not
 
 ---
 
-## 🌐 Contact
+## Contact
 
 **Brandon Leslie**  
 University of New England — Data Science Major  
